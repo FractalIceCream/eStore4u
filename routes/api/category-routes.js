@@ -23,7 +23,8 @@ router.get('/:id', async (req, res) => {
     const data = await Category.findByPk(req.params.id, {
       include: [{ model: Product }]
     });
-    if(data == null) {
+    //if category id is not found
+    if(data === null) {
       return res.status(404).json(`Cannot proceed GET request`);
     }
     res.status(200).json(data);
@@ -33,9 +34,15 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  // create a new category
+  // create a new category if new category name exist cancel request
   try {
-    const category = await Category.create(req.body);
+    const [category, created] = await Category.findOrCreate({
+      where: {category_name: req.body.category_name},
+      defaults: req.body
+    });
+    if (!created) {
+      return res.status(400).json(`Category ${req.body.category_name} already exists`);
+    }
     res.status(200).json(category);
   } catch (error) {
     res.status(500).json(error);
@@ -51,7 +58,8 @@ router.put('/:id', async (req, res) => {
         id: req.params.id,
       },
     });
-    if(updateCategory == null) {
+    //if category id is not found
+    if(updateCategory === null) {
       return res.status(404).json(`Cannot proceed PUT request`);
     }
     res.status(200).json(updateCategory);
@@ -69,6 +77,7 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id
       }
     });
+    //if category id is not found
     if (!result) {
       return res.status(404).json(`Issue occurred DELETE operation`);
     }

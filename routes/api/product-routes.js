@@ -25,7 +25,8 @@ router.get('/:id', async (req, res) => {
     const data = await Product.findByPk(req.params.id, {
       include: [{ model:Category }, { model:Tag }]
     });
-    if(data == null) {
+    //if product id is not found
+    if(data === null) {
       return res.status(404).json(`Cannot proceed GET request`);
     }
     res.status(200).json(data);
@@ -120,6 +121,7 @@ router.delete('/:id', async (req, res) => {
         id: req.params.id
       }
     });
+    //if product id is not found
     if (!result) {
       return res.status(404).json(`Issue occurred DELETE operation`);
     }
