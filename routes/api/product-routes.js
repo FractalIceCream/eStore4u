@@ -25,6 +25,9 @@ router.get('/:id', async (req, res) => {
     const data = await Product.findByPk(req.params.id, {
       include: [{ model:Category }, { model:Tag }]
     });
+    if(data == null) {
+      return res.status(404).json(`Cannot proceed GET request`);
+    }
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
@@ -49,8 +52,9 @@ router.post('/', (req, res) => {
           return {
             product_id: product.id,
             tag_id,
-          };
+          }
         });
+        
         return ProductTag.bulkCreate(productTagIdArr);
       }
       // if no product tags, just respond
@@ -111,11 +115,14 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
   try {
-    await Product.destroy({
+    const result = await Product.destroy({
       where: {
         id: req.params.id
       }
     });
+    if (!result) {
+      return res.status(404).json(`Issue occurred DELETE operation`);
+    }
     res.status(200).json(`DELETED Product ID: ${req.params.id}`);
   } catch (error) {
     res.status(500).json(error);

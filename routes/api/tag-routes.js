@@ -23,6 +23,9 @@ router.get('/:id', async (req, res) => {
     const data =  await Tag.findByPk(req.params.id, {
       include:  [{ model:Product }]
     });
+    if(data == null) {
+      return res.status(404).json(`Cannot proceed GET request`);
+    }
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json(error);
@@ -47,6 +50,9 @@ router.put('/:id', async (req, res) => {
         id: req.params.id
       }
     });
+    if(updateTag == null) {
+      return res.status(404).json(`Cannot proceed PUT request`);
+    }
     res.status(200).json(updateTag);
   } catch (error) {
     res.status(500).json(error);
@@ -56,11 +62,14 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete on tag by its `id` value
   try {
-    await Tag.destroy({
+    const result = await Tag.destroy({
       where: {
         id: req.params.id
       }
     });
+    if (!result) {
+      return res.status(404).json(`Issue occurred DELETE operation`);
+    }
     res.status(200).json(`DELETED Tag ID: ${req.params.id}`);
   } catch (error) {
     res.status(500).json(error);
