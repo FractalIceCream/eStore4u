@@ -23,6 +23,9 @@ router.get('/:id', async (req, res) => {
     const data = await Category.findByPk(req.params.id, {
       include: [{ model: Product }]
     });
+    if(data == null) {
+      return res.status(404).json(`Cannot proceed GET request`);
+    }
     res.status(200).json(data);
   } catch (err) {
     res.status(500).json(err);
@@ -48,6 +51,9 @@ router.put('/:id', async (req, res) => {
         id: req.params.id,
       },
     });
+    if(updateCategory == null) {
+      return res.status(404).json(`Cannot proceed PUT request`);
+    }
     res.status(200).json(updateCategory);
   } catch (error) {
     res.status(500).json(error);
@@ -58,11 +64,14 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   try {
-    await Category.destroy({
+    const result = await Category.destroy({
       where: {
         id: req.params.id
       }
     });
+    if (!result) {
+      return res.status(404).json(`Issue occurred DELETE operation`);
+    }
     res.status(200).json(`DELETED Category ID: ${req.params.id}`);
   } catch (error) {
     res.status(500).json(error);
