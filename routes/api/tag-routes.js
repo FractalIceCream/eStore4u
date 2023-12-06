@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
       defaults: req.body
     });
     if (!created) {
-      res.status(400).json(`Tag ${req.body.tag_name} already exists`);
+      return res.status(400).json(`Tag ${req.body.tag_name} already exists`);
     }
     res.status(200).json(tag);
   } catch (error) {
