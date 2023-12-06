@@ -25,7 +25,7 @@ router.get('/:id', async (req, res) => {
     });
     //if category id is not found
     if(data === null) {
-      return res.status(404).json(`Cannot proceed GET request`);
+      return res.status(400).json(`Cannot proceed GET request`);
     }
     res.status(200).json(data);
   } catch (err) {
